@@ -1,4 +1,9 @@
-# 📌 CRUD en PostgreSQL
+# 📌 CRUD en PostgreSQL (con eliminación lógica)
+
+En este esquema, las tablas tienen un campo `status BOOLEAN` que define si el registro está **activo (TRUE)** o **eliminado lógicamente (FALSE)**.  
+De esta forma, nunca borramos físicamente los datos.
+
+---
 
 ### 1. 🔹 CREATE (Agregar película y elenco)
 
@@ -23,44 +28,61 @@ VALUES (
 INSERT INTO actores (nombre) VALUES ('Leonardo DiCaprio'), ('Joseph Gordon-Levitt');
 
 -- Relacionar actores con personajes
-INSERT INTO elenco (id_pelicula, id_actor, personaje) VALUES
+INSERT INTO elenco (id_pelicula, id_actor, personaje)
+VALUES
 (2, 7, 'Dom Cobb'),
 (2, 8, 'Arthur');
-```
+````
 
 ---
 
-### 2. 🔹 READ (Consultar películas con elenco)
+### 2. 🔹 READ (Consultar solo registros activos)
 
 ```sql
--- Todas las películas
-SELECT * FROM peliculas;
+-- Todas las películas activas
+SELECT * FROM peliculas WHERE status = TRUE;
 
--- Película con su elenco
+-- Película con su elenco activo
 SELECT p.titulo, p.anio, p.genero, p.duracion, p.director, 
        a.nombre AS actor, e.personaje
 FROM peliculas p
 JOIN elenco e ON p.id_pelicula = e.id_pelicula
 JOIN actores a ON e.id_actor = a.id_actor
-WHERE p.id_pelicula = 1;
+WHERE p.id_pelicula = 1
+  AND p.status = TRUE
+  AND a.status = TRUE
+  AND e.status = TRUE;
 ```
 
 ---
 
-### 3. 🔹 UPDATE (Actualizar película)
+### 3. 🔹 UPDATE (Actualizar datos de una película)
 
 ```sql
 -- Cambiar duración y género de "Pixeles"
 UPDATE peliculas
 SET duracion = '2h 00m', genero = 'Acción/Comedia/Ciencia Ficción'
-WHERE id_pelicula = 1;
+WHERE id_pelicula = 1
+  AND status = TRUE;
 ```
 
 ---
 
-### 4. 🔹 DELETE (Eliminar película y elenco)
+### 4. 🔹 DELETE lógico (marcar como inactivo)
 
 ```sql
--- Se eliminan automáticamente sus relaciones en elenco
-DELETE FROM peliculas WHERE id_pelicula = 2;
+-- Eliminar lógicamente una película
+UPDATE peliculas
+SET status = FALSE
+WHERE id_pelicula = 2;
+
+-- Eliminar lógicamente un actor
+UPDATE actores
+SET status = FALSE
+WHERE id_actor = 7;
+
+-- Eliminar lógicamente una relación de elenco
+UPDATE elenco
+SET status = FALSE
+WHERE id_pelicula = 2 AND id_actor = 7;
 ```

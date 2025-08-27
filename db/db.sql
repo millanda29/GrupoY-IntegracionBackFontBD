@@ -19,7 +19,8 @@ CREATE TABLE peliculas (
     musica VARCHAR(150),
     historia VARCHAR(255),
     guion VARCHAR(255),
-    url_portada VARCHAR(255)
+    url_portada VARCHAR(255),
+    status BOOLEAN DEFAULT TRUE -- TRUE = activo, FALSE = eliminado lógicamente
 );
 
 -- ===========================================
@@ -27,16 +28,18 @@ CREATE TABLE peliculas (
 -- ===========================================
 CREATE TABLE actores (
     id_actor SERIAL PRIMARY KEY,
-    nombre VARCHAR(150) NOT NULL
+    nombre VARCHAR(150) NOT NULL,
+    status BOOLEAN DEFAULT TRUE
 );
 
 -- ===========================================
 -- TABLA RELACIÓN (PELÍCULA - ACTORES)
 -- ===========================================
 CREATE TABLE elenco (
-    id_pelicula INT REFERENCES peliculas(id_pelicula) ON DELETE CASCADE,
-    id_actor INT REFERENCES actores(id_actor) ON DELETE CASCADE,
+    id_pelicula INT REFERENCES peliculas(id_pelicula),
+    id_actor INT REFERENCES actores(id_actor),
     personaje VARCHAR(150),
+    status BOOLEAN DEFAULT TRUE,
     PRIMARY KEY (id_pelicula, id_actor)
 );
 
