@@ -3,34 +3,45 @@ import { pool } from "../db.js";
 
 const router = express.Router();
 
-//  Crear película
-router.post("/", async (req, res) => {
+// Actualizar película (solo campos enviados)
+router.put("/:id", async (req, res) => {
   try {
-    const {
-      titulo,
-      anio,
-      genero,
-      duracion,
-      descripcion,
-      fecha_estreno,
-      director,
-      musica,
-      historia,
-      guion,
-      url_portada,
-    } = req.body;
+    const { id } = req.params;
+    const campos = req.body;
 
-    const result = await pool.query(
-      `INSERT INTO peliculas 
-      (titulo, anio, genero, duracion, descripcion, fecha_estreno, director, musica, historia, guion, url_portada) 
-      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) RETURNING *`,
-      [titulo, anio, genero, duracion, descripcion, fecha_estreno, director, musica, historia, guion, url_portada]
-    );
+    if (Object.keys(campos).length === 0) {
+      return res.status(400).json({ message: "No se enviaron campos para actualizar" });
+    }
+
+    const setClauses = [];
+    const values = [];
+    let index = 1;
+
+    for (const [key, value] of Object.entries(campos)) {
+      setClauses.push(`${key} = $${index}`);
+      values.push(value);
+      index++;
+    }
+
+    values.push(id);
+
+    const query = `
+      UPDATE peliculas 
+      SET ${setClauses.join(", ")} 
+      WHERE id_pelicula = $${index}
+      RETURNING *;
+    `;
+
+    const result = await pool.query(query, values);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: "Película no encontrada" });
+    }
 
     res.json(result.rows[0]);
   } catch (error) {
-    console.error("❌ Error al crear:", error.message);
-    res.status(500).json({ error: "Error al crear película" });
+    console.error("❌ Error al actualizar:", error.message);
+    res.status(500).json({ error: "Error al actualizar película" });
   }
 });
 
