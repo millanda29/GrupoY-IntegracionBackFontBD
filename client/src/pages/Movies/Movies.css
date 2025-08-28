@@ -1,0 +1,17 @@
+.movies-page {
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.movies-page h1 {
+    font-size: 3em;
+    color: #fff;
+    margin-bottom: 40px;
+}
+
+.movies-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+}
