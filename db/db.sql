@@ -36,11 +36,12 @@ CREATE TABLE actores (
 -- TABLA RELACIÓN (PELÍCULA - ACTORES)
 -- ===========================================
 CREATE TABLE elenco (
-    id_pelicula INT REFERENCES peliculas(id_pelicula),
-    id_actor INT REFERENCES actores(id_actor),
+    id_elenco SERIAL PRIMARY KEY,             -- PK única para el registro
+    id_pelicula INT NOT NULL REFERENCES peliculas(id_pelicula),
+    id_actor INT NOT NULL REFERENCES actores(id_actor),
     personaje VARCHAR(150),
-    status BOOLEAN DEFAULT TRUE,
-    PRIMARY KEY (id_pelicula, id_actor)
+    status BOOLEAN DEFAULT TRUE,              -- TRUE = activo, FALSE = eliminado lógicamente
+    UNIQUE (id_pelicula, id_actor)           -- Evita duplicados de mismo actor en la misma película
 );
 
 -- ===========================================
@@ -84,3 +85,84 @@ INSERT INTO elenco (id_pelicula, id_actor, personaje) VALUES
 (1, 4, 'Violet Van Patten'),
 (1, 5, 'Ludlow Lamonsoff'),
 (1, 6, 'Lady Lisa');
+
+-- ===========================================
+-- INSERTAR PELÍCULA: Inception
+-- ===========================================
+INSERT INTO peliculas (
+    titulo, anio, genero, duracion, descripcion, fecha_estreno,
+    director, musica, historia, guion, url_portada
+) VALUES (
+    'Inception',
+    2010,
+    'Ciencia Ficción/Acción',
+    '2h 28m',
+    'Un ladrón que roba secretos corporativos a través de los sueños recibe una misión especial.',
+    '2010-07-16',
+    'Christopher Nolan',
+    'Hans Zimmer',
+    'Christopher Nolan',
+    'Christopher Nolan',
+    'https://m.media-amazon.com/images/I/51zUbui+gbL._AC_SY450_.jpg'
+);
+
+-- ===========================================
+-- INSERTAR ACTORES: Inception
+-- ===========================================
+INSERT INTO actores (nombre) VALUES
+('Leonardo DiCaprio'),
+('Joseph Gordon-Levitt'),
+('Elliot Page'),
+('Tom Hardy'),
+('Ken Watanabe'),
+('Cillian Murphy');
+
+-- ===========================================
+-- RELACIONAR ACTORES CON SUS PERSONAJES
+-- ===========================================
+INSERT INTO elenco (id_pelicula, id_actor, personaje) VALUES
+(2, 7, 'Dom Cobb'),
+(2, 8, 'Arthur'),
+(2, 9, 'Ariadne'),
+(2, 10, 'Eames'),
+(2, 11, 'Saito'),
+(2, 12, 'Robert Fischer');
+
+-- ===========================================
+-- INSERTAR PELÍCULA: The Matrix
+-- ===========================================
+INSERT INTO peliculas (
+    titulo, anio, genero, duracion, descripcion, fecha_estreno,
+    director, musica, historia, guion, url_portada
+) VALUES (
+    'The Matrix',
+    1999,
+    'Ciencia Ficción/Acción',
+    '2h 16m',
+    'Un hacker descubre la verdad sobre su realidad y lidera la rebelión contra las máquinas.',
+    '1999-03-31',
+    'Lana Wachowski, Lilly Wachowski',
+    'Don Davis',
+    'Lana Wachowski, Lilly Wachowski',
+    'Lana Wachowski, Lilly Wachowski',
+    'https://upload.wikimedia.org/wikipedia/en/c/c1/The_Matrix_Poster.jpg'
+);
+
+-- ===========================================
+-- INSERTAR ACTORES: The Matrix
+-- ===========================================
+INSERT INTO actores (nombre) VALUES
+('Keanu Reeves'),
+('Laurence Fishburne'),
+('Carrie-Anne Moss'),
+('Hugo Weaving');
+
+-- ===========================================
+-- RELACIONAR ACTORES CON SUS PERSONAJES
+-- ===========================================
+INSERT INTO elenco (id_pelicula, id_actor, personaje) VALUES
+(3, 13, 'Neo'),
+(3, 14, 'Morpheus'),
+(3, 15, 'Trinity'),
+(3, 16, 'Agent Smith');
+
