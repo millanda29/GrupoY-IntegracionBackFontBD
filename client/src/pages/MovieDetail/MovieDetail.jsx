@@ -1,25 +1,60 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import './MovieDetail.css';
+import { movies as allMovies } from '../../data/movies';
+import { useModal } from '../../context/ModalContext.jsx';
+import MovieModal from '../../components/MovieModal/MovieModal';
 
 const MovieDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { showModal } = useModal();
+  const [isEditing, setIsEditing] = useState(false);
 
-  const movie = {
-    id_pelicula: id,
-    titulo: 'Pixeles',
-    anio: 2015,
-    genero: 'Acción/Comedia',
-    duracion: '1h 45m',
-    descripcion: 'Excampeones de juegos de arcade deben jugar una última partida contra alienígenas que imitan videojuegos retro.',
-    fecha_estreno: '2015-07-24',
-    director: 'Chris Columbus',
-    musica: 'Henry Jackman',
-    historia: 'Tim Herlihy, Patrick Jean',
-    guion: 'Chris Columbus, Tim Herlihy, Timothy Dowling',
-    url_portada: 'https://upload.wikimedia.org/wikipedia/en/2/20/Pixels_2015_film_poster.jpg'
+  const [movie, setMovie] = useState(null);
+
+  useEffect(() => {
+    const selectedMovie = allMovies.find((m) => m.id_pelicula === parseInt(id));
+    if (selectedMovie) {
+      setMovie(selectedMovie);
+    } else {
+      console.error(`Movie with id ${id} not found`);
+      navigate('/'); // Or show a not found component
+    }
+  }, [id, navigate]);
+
+  const handleEdit = () => {
+    setIsEditing(true);
   };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+  };
+
+  const handleSave = (editedMovie, uploadedFile) => {
+    let movieToSave = { ...editedMovie };
+
+    if (uploadedFile) {
+      console.log('Simulando subida de imagen:', uploadedFile.name);
+      movieToSave.url_portada = URL.createObjectURL(uploadedFile);
+      console.log('Datos a guardar en la base de datos:', movieToSave);
+    }
+
+    setMovie(movieToSave);
+    setIsEditing(false);
+    showModal('¡Guardado exitoso!');
+  };
+
+  const handleDelete = () => {
+    console.log(`Eliminar película con ID: ${id}`);
+    // LLamada al api para eliminar la pelicula del backend
+    showModal('¡Película eliminada!');
+    navigate("/movies");
+  };
+
+  if (!movie) {
+    return <div>Cargando...</div>;
+  }
 
   return (
     <div className="movie-detail-container">
@@ -41,8 +76,24 @@ const MovieDetail = () => {
           <p><strong>Historia:</strong> {movie.historia}</p>
           <p><strong>Guión:</strong> {movie.guion}</p>
           <p><strong>Descripción:</strong> {movie.descripcion}</p>
+          <div className="movie-detail-actions">
+            <button className="edit-button" onClick={handleEdit}>
+              Editar
+            </button>
+            <button className="delete-button" onClick={handleDelete}>
+              Eliminar
+            </button>
+          </div>
         </div>
       </div>
+
+      {isEditing && (
+        <MovieModal 
+          movie={movie}
+          onClose={handleCancel}
+          onSave={handleSave}
+        />
+      )}
     </div>
   );
 };

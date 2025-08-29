@@ -1,58 +1,35 @@
-import React from 'react';
+import React, { useState } from 'react';
 import MovieCard from '../../components/MovieCard/MovieCard';
 import './Movies.css';
+import { movies as initialMovies } from '../../data/movies';
+import MovieModal from '../../components/MovieModal/MovieModal';
+import { useModal } from '../../context/ModalContext';
 
 const Movies = () => {
-  const movies = [
-    {
-      id_pelicula: 1,
-      titulo: 'Movie 1',
-      descripcion: 'This is a description for movie 1.',
-      url_portada: 'https://via.placeholder.com/300x200',
-      genero: 'Action',
-      fecha_estreno: '2023-01-01'
-    },
-    {
-      id_pelicula: 2,
-      titulo: 'Movie 2',
-      descripcion: 'This is a description for movie 2.',
-      url_portada: 'https://via.placeholder.com/300x200',
-      genero: 'Comedy',
-      fecha_estreno: '2023-02-01'
-    },
-    {
-      id_pelicula: 3,
-      titulo: 'Movie 3',
-      descripcion: 'This is a description for movie 3.',
-      url_portada: 'https://via.placeholder.com/300x200',
-      genero: 'Drama',
-      fecha_estreno: '2023-03-01'
-    },
-    {
-        id_pelicula: 4,
-        titulo: 'Movie 4',
-        descripcion: 'This is a description for movie 4.',
-        url_portada: 'https://via.placeholder.com/300x200',
-        genero: 'Thriller',
-        fecha_estreno: '2023-04-01'
-      },
-      {
-        id_pelicula: 5,
-        titulo: 'Movie 5',
-        descripcion: 'This is a description for movie 5.',
-        url_portada: 'https://via.placeholder.com/300x200',
-        genero: 'Sci-Fi',
-        fecha_estreno: '2023-05-01'
-      },
-      {
-        id_pelicula: 6,
-        titulo: 'Movie 6',
-        descripcion: 'This is a description for movie 6.',
-        url_portada: 'https://via.placeholder.com/300x200',
-        genero: 'Horror',
-        fecha_estreno: '2023-06-01'
-      }
-  ];
+  const [movies, setMovies] = useState(initialMovies);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const { showModal } = useModal();
+
+  const handleOpenCreateModal = () => {
+    setIsCreateModalOpen(true);
+  };
+
+  const handleCloseCreateModal = () => {
+    setIsCreateModalOpen(false);
+  };
+
+  const handleSaveNewMovie = (newMovie, uploadedFile) => {
+    console.log('Guardando nueva película:', newMovie);
+    if (uploadedFile) {
+      console.log('Simulando subida de imagen:', uploadedFile.name);
+      newMovie.url_portada = URL.createObjectURL(uploadedFile);
+    }
+    // Aquí iría la lógica para guardar en la base de datos y obtener el nuevo ID
+    const newMovieWithId = { ...newMovie, id_pelicula: movies.length + 1 };
+    setMovies([...movies, newMovieWithId]);
+    setIsCreateModalOpen(false);
+    showModal('¡Película creada con éxito!');
+  };
 
   return (
     <div className="movies-page">
@@ -70,6 +47,13 @@ const Movies = () => {
           />
         ))}
       </div>
+      <button className="fab" onClick={handleOpenCreateModal}>+</button>
+      {isCreateModalOpen && (
+        <MovieModal 
+          onClose={handleCloseCreateModal}
+          onSave={handleSaveNewMovie}
+        />
+      )}
     </div>
   );
 };
