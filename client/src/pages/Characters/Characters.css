@@ -1,0 +1,21 @@
+.characters-container {
+  padding: 32px 16px;
+  background: #181818;
+  min-height: 100vh;
+}
+
+.characters-container h2 {
+  color: #fff;
+  margin-bottom: 30px;
+  text-align: center;
+  font-size: 3rem;
+  font-weight: bold;
+  margin-top: 1cm;
+}
+
+.characters-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+}

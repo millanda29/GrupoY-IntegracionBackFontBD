@@ -23,6 +23,11 @@ const Navbar = () => {
                 Peliculas
             </Link>
           </li>
+          <li className="nav-item">
+            <Link to="/characters" className="nav-links">
+                Personajes
+            </Link>
+          </li>
         </ul>
       </div>
       {modal.isOpen && (
