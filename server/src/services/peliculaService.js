@@ -73,3 +73,12 @@ export const deletePelicula = async (id) => {
   if (result.rows.length === 0) return null;
   return new Pelicula(result.rows[0]);
 };
+
+export const activatePelicula = async (id) => {
+  const result = await pool.query(
+    "UPDATE peliculas SET status=true WHERE id_pelicula=$1 RETURNING *",
+    [id]
+  );
+  if (result.rows.length === 0) return null;
+  return new Pelicula(result.rows[0]);
+};

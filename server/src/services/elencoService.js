@@ -92,3 +92,12 @@ export const deleteElenco = async (id) => {
   if (result.rows.length === 0) return null;
   return new Elenco(result.rows[0]);
 };
+
+export const activateElenco = async (id) => {
+  const result = await pool.query(
+    "UPDATE elenco SET status = TRUE WHERE id_elenco = $1 RETURNING *",
+    [id]
+  );
+  if (result.rows.length === 0) return null;
+  return new Elenco(result.rows[0]);
+};

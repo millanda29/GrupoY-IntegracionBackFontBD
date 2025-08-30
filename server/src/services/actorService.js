@@ -37,3 +37,12 @@ export const deleteActor = async (id) => {
   if (result.rows.length === 0) return null;
   return new Actor(result.rows[0]);
 };
+
+export const activateActor = async (id) => {
+  const result = await pool.query(
+    'UPDATE actores SET status = TRUE WHERE id_actor = $1 RETURNING *',
+    [id]
+  );
+  if (result.rows.length === 0) return null;
+  return new Actor(result.rows[0]);
+};
