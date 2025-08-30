@@ -4,7 +4,8 @@ import Navbar from './components/Navbar/Navbar';
 import Home from './pages/Home/Home';
 import Movies from './pages/Movies/Movies';
 import MovieDetail from './pages/MovieDetail/MovieDetail';
-import Characters from "./pages/Characters/Characters";
+import Actors from "./pages/Actors/Actors";
+import ActorDetail from './pages/ActorDetail/ActorDetail';
 import './App.css';
 
 function App() {
@@ -14,8 +15,9 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/movies" element={<Movies />} />
-        <Route path="/characters" element={<Characters />} />
+        <Route path="/actors" element={<Actors />} />
         <Route path="/movie/:id" element={<MovieDetail />} />
+        <Route path="/actor/:id" element={<ActorDetail />} />
       </Routes>
     </div>
   );

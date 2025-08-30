@@ -4,6 +4,7 @@ import './MovieDetail.css';
 import { movies as allMovies } from '../../data/movies';
 import { useModal } from '../../context/ModalContext.jsx';
 import MovieModal from '../../components/MovieModal/MovieModal';
+import MovieCast from '../../components/MovieCast/MovieCast';
 
 const MovieDetail = () => {
   const { id } = useParams();
@@ -86,6 +87,8 @@ const MovieDetail = () => {
           </div>
         </div>
       </div>
+
+      <MovieCast id_pelicula={movie.id_pelicula} />
 
       {isEditing && (
         <MovieModal 

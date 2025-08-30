@@ -24,8 +24,8 @@ const Navbar = () => {
             </Link>
           </li>
           <li className="nav-item">
-            <Link to="/characters" className="nav-links">
-                Personajes
+            <Link to="/actors" className="nav-links">
+                Actores
             </Link>
           </li>
         </ul>
