@@ -4,7 +4,8 @@ import {
   getActor,
   createActor,
   updateActor,
-  deleteActor
+  deleteActor,
+  activateActor
 } from '../controllers/actorController.js';
 
 const router = express.Router();
@@ -14,5 +15,6 @@ router.get('/:id', getActor);
 router.post('/', createActor);
 router.put('/:id', updateActor);
 router.delete('/:id', deleteActor);
+router.put("/:id", activateActor);
 
 export default router;

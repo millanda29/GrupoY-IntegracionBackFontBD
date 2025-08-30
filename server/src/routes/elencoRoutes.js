@@ -5,7 +5,8 @@ import {
   createElenco,
   updateElenco,
   deleteElenco,
-  getElencoByPelicula
+  getElencoByPelicula,
+  activateElenco
 } from "../controllers/elencoController.js";
 
 const router = express.Router();
@@ -16,5 +17,6 @@ router.get("/pelicula/:id", getElencoByPelicula);
 router.post("/", createElenco);
 router.put("/:id", updateElenco);
 router.delete("/:id", deleteElenco);
+router.put("/:id", activateElenco);
 
 export default router;
