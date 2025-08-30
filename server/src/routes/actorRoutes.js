@@ -15,6 +15,6 @@ router.get('/:id', getActor);
 router.post('/', createActor);
 router.put('/:id', updateActor);
 router.delete('/:id', deleteActor);
-router.put("/:id", activateActor);
+router.put("/activate/:id", activateActor);
 
 export default router;

@@ -17,6 +17,6 @@ router.get("/pelicula/:id", getElencoByPelicula);
 router.post("/", createElenco);
 router.put("/:id", updateElenco);
 router.delete("/:id", deleteElenco);
-router.put("/:id", activateElenco);
+router.put("/activate/:id", activateElenco);
 
 export default router;

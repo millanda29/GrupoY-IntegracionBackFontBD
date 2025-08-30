@@ -15,6 +15,6 @@ router.get("/:id", getPelicula);
 router.put("/:id", updatePeliculaFull);
 router.patch("/:id", updatePeliculaPartial); // actualización parcial
 router.delete("/:id", deletePelicula);
-router.put("/:id", activatePelicula);
+router.put("/activate/:id", activatePelicula);
 
 export default router;
