@@ -12,6 +12,32 @@ export const getPeliculaById = async (id) => {
   return new Pelicula(result.rows[0]);
 };
 
+export const createPelicula = async (data) => {
+  const {
+    titulo,
+    anio,
+    genero,
+    duracion,
+    descripcion,
+    fecha_estreno,
+    director,
+    musica,
+    historia,
+    guion,
+    url_portada
+  } = data;
+
+  const result = await pool.query(
+    `INSERT INTO peliculas (titulo, anio, genero, duracion, descripcion, fecha_estreno, director, musica, historia, guion, url_portada)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+    RETURNING *`,
+    [titulo, anio, genero, duracion, descripcion, fecha_estreno, director, musica, historia, guion, url_portada]
+  );
+
+  if (result.rows.length === 0) return null;
+  return new Pelicula(result.rows[0]);
+};
+
 export const updatePelicula = async (id, data) => {
   // Construcción dinámica para campos parciales
   const setClauses = [];

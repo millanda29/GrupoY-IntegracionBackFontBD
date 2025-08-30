@@ -19,6 +19,16 @@ export const getPelicula = async (req, res) => {
   }
 };
 
+export const createPelicula = async (req, res) => {
+  try {
+    const pelicula = await peliculaService.createPelicula(req.body);
+    if (!pelicula) return res.status(400).json({ message: "Error creating movie" });
+    res.status(201).json(pelicula);
+  } catch (error) {
+    res.status(500).json({ error: "Error creating movie" });
+  }
+};
+
 export const updatePeliculaPartial = async (req, res) => {
   try {
     const pelicula = await peliculaService.updatePelicula(req.params.id, req.body);
