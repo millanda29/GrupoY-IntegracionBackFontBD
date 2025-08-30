@@ -8,19 +8,29 @@ http://localhost:4000
 
 ---
 
-## 📌 Recursos principales
+## 📌 Descripción
 
-* 🎬 **Películas** → CRUD de películas.
-* 🎭 **Actores** → CRUD de actores.
-* 🎭🎬 **Elenco** → Relación entre películas y actores (personajes).
+Esta API permite gestionar un catálogo de películas, actores y el elenco de personajes de cada película.
+Cuenta con **eliminación lógica** mediante el campo `status` (TRUE = activo, FALSE = eliminado).
+Nunca se borran físicamente los registros, lo que permite reactivar los datos si es necesario.
 
 ---
 
-## 🎬 Películas
+## 📌 Recursos principales
+
+* 🎬 **Películas** → CRUD de películas con información completa, incluyendo portada.
+* 🎭 **Actores** → CRUD de actores con foto opcional.
+* 🎭🎬 **Elenco** → Relación entre películas y actores, con nombre de personaje y URL opcional de personaje.
+
+---
+
+# 🎬 Películas
 
 ### 1. Crear una película
 
 **POST** `/api/peliculas`
+
+**Request:**
 
 ```json
 {
@@ -31,8 +41,10 @@ http://localhost:4000
   "descripcion": "Tras la premonición de un compañero de clase, varios jóvenes enfrentan un horrible final en medio de un accidente aéreo.",
   "fecha_estreno": "2000-03-17",
   "director": "James Wong",
+  "musica": null,
   "historia": "Jeffrey Reddick",
-  "status": true
+  "guion": null,
+  "url_portada": null
 }
 ```
 
@@ -86,19 +98,62 @@ http://localhost:4000
 
 ---
 
-### 3. Obtener una película por ID
+### 3. Obtener película por ID
 
 **GET** `/api/peliculas/{id}`
 
----
-
-### 4. Actualizar película (parcial/total)
-
-**PUT** `/api/peliculas/{id}`
+**Response 200:**
 
 ```json
 {
-  "anio": 2015
+  "id_pelicula": 1,
+  "titulo": "Pixeles",
+  "anio": 2015,
+  "genero": "Acción/Comedia",
+  "duracion": "1h 45m",
+  "descripcion": "Excampeones de juegos de arcade deben jugar una última partida contra alienígenas que imitan videojuegos retro.",
+  "fecha_estreno": "2015-07-24T05:00:00.000Z",
+  "director": "Chris Columbus",
+  "musica": "Henry Jackman",
+  "historia": "Tim Herlihy, Patrick Jean",
+  "guion": "Chris Columbus, Tim Herlihy, Timothy Dowling",
+  "url_portada": "https://upload.wikimedia.org/wikipedia/en/2/20/Pixels_2015_film_poster.jpg",
+  "status": true
+}
+```
+
+---
+
+### 4. Actualizar película (parcial)
+
+**PUT** `/api/peliculas/{id}`
+
+**Request ejemplo:**
+
+```json
+{
+  "anio": 2016,
+  "duracion": "2h 00m"
+}
+```
+
+**Response 200:**
+
+```json
+{
+  "id_pelicula": 1,
+  "titulo": "Pixeles",
+  "anio": 2016,
+  "genero": "Acción/Comedia",
+  "duracion": "2h 00m",
+  "descripcion": "Excampeones de juegos de arcade deben jugar una última partida contra alienígenas que imitan videojuegos retro.",
+  "fecha_estreno": "2015-07-24T05:00:00.000Z",
+  "director": "Chris Columbus",
+  "musica": "Henry Jackman",
+  "historia": "Tim Herlihy, Patrick Jean",
+  "guion": "Chris Columbus, Tim Herlihy, Timothy Dowling",
+  "url_portada": "https://upload.wikimedia.org/wikipedia/en/2/20/Pixels_2015_film_poster.jpg",
+  "status": true
 }
 ```
 
@@ -110,7 +165,11 @@ http://localhost:4000
 
 ```json
 {
-  "message": "Película eliminada correctamente"
+  "message": "Película eliminada correctamente",
+  "pelicula": {
+    "id_pelicula": 1,
+    "status": false
+  }
 }
 ```
 
@@ -122,31 +181,36 @@ http://localhost:4000
 
 ```json
 {
-  "message": "Película activada correctamente"
+  "message": "Película activada correctamente",
+  "pelicula": {
+    "id_pelicula": 1,
+    "status": true
+  }
 }
 ```
 
 ---
 
-## 🎭 Actores
+# 🎭 Actores
 
-### 1. Crear un actor
+### 1. Crear actor
 
 **POST** `/api/actores`
 
 ```json
 {
   "nombre": "Isaac Llanda",
-  "status": true
+  "url_foto": null
 }
 ```
 
-**Response:**
+**Response 201:**
 
 ```json
 {
   "id_actor": 17,
   "nombre": "Isaac Llanda",
+  "url_foto": null,
   "status": true
 }
 ```
@@ -159,7 +223,7 @@ http://localhost:4000
 
 ---
 
-### 3. Obtener un actor por ID
+### 3. Obtener actor por ID
 
 **GET** `/api/actores/{id}`
 
@@ -171,7 +235,8 @@ http://localhost:4000
 
 ```json
 {
-  "nombre": "Isaac Llanda 2"
+  "nombre": "Isaac Llanda 2",
+  "url_foto": "https://example.com/foto.jpg"
 }
 ```
 
@@ -187,6 +252,7 @@ http://localhost:4000
   "actor": {
     "id_actor": 17,
     "nombre": "Isaac Llanda 2",
+    "url_foto": "https://example.com/foto.jpg",
     "status": false
   }
 }
@@ -198,9 +264,19 @@ http://localhost:4000
 
 **PUT** `/api/actores/activate/{id}`
 
+```json
+{
+  "message": "Actor activated logically",
+  "actor": {
+    "id_actor": 17,
+    "status": true
+  }
+}
+```
+
 ---
 
-## 🎭🎬 Elenco
+# 🎭🎬 Elenco
 
 ### 1. Obtener todo el elenco
 
@@ -220,7 +296,7 @@ http://localhost:4000
 
 ---
 
-### 4. Crear un registro de elenco
+### 4. Crear registro de elenco
 
 **POST** `/api/elenco`
 
@@ -228,19 +304,21 @@ http://localhost:4000
 {
   "id_pelicula": 2,
   "id_actor": 8,
-  "personaje": "Sam Brenner"
+  "personaje": "Sam Brenner",
+  "url_personaje": "https://example.com/personaje.jpg"
 }
 ```
 
 ---
 
-### 5. Actualizar registro de elenco
+### 5. Actualizar registro de elenco (parcial)
 
 **PUT** `/api/elenco/{id}`
 
 ```json
 {
-  "id_pelicula": 1
+  "personaje": "Sam Brenner Updated",
+  "url_personaje": "https://example.com/nuevo_personaje.jpg"
 }
 ```
 
@@ -253,11 +331,12 @@ http://localhost:4000
 ```json
 {
   "message": "Elenco deleted logically",
-  "eliminado": {
+  "elenco": {
     "id_elenco": 17,
-    "id_pelicula": 1,
-    "id_actor": 17,
-    "personaje": "Sam Brenner",
+    "id_pelicula": 2,
+    "id_actor": 8,
+    "personaje": "Sam Brenner Updated",
+    "url_personaje": "https://example.com/nuevo_personaje.jpg",
     "status": false
   }
 }
@@ -271,13 +350,25 @@ http://localhost:4000
 
 ```json
 {
-  "message": "Elenco activate logically",
-  "eliminado": {
+  "message": "Elenco activated logically",
+  "elenco": {
     "id_elenco": 17,
-    "id_pelicula": 1,
-    "id_actor": 17,
-    "personaje": "Sam Brenner",
+    "id_pelicula": 2,
+    "id_actor": 8,
+    "personaje": "Sam Brenner Updated",
+    "url_personaje": "https://example.com/nuevo_personaje.jpg",
     "status": true
   }
 }
 ```
+
+---
+
+✅ **Notas importantes:**
+
+1. Todos los registros cuentan con **status booleano** (`true` = activo, `false` = eliminado lógicamente).
+2. Para reactivar un registro eliminado, usar el endpoint `/activate/{id}`.
+3. Los campos `url_portada`, `url_foto` y `url_personaje` son opcionales.
+4. La actualización parcial permite enviar solo los campos que se quieren modificar.
+
+---

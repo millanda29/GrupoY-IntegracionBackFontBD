@@ -2,8 +2,7 @@ import express from "express";
 import {
   getPeliculas,
   getPelicula,
-  updatePeliculaPartial,
-  updatePeliculaFull,
+  updatePelicula,
   deletePelicula,
   activatePelicula,
   createPelicula
@@ -14,8 +13,7 @@ const router = express.Router();
 router.get("/", getPeliculas);
 router.get("/:id", getPelicula);
 router.post("/", createPelicula);
-router.put("/:id", updatePeliculaFull);
-router.patch("/:id", updatePeliculaPartial); // actualización parcial
+router.put("/:id", updatePelicula); // actualización parcial
 router.delete("/:id", deletePelicula);
 router.put("/activate/:id", activatePelicula);
 

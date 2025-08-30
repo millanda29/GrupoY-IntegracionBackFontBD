@@ -4,8 +4,8 @@ import Elenco from "../models/elencoModel.js";
 // Obtener elenco activo
 export const getAllElenco = async () => {
   const result = await pool.query(
-    `SELECT e.id_elenco, e.id_pelicula, e.id_actor, e.personaje, e.status,
-            p.titulo AS pelicula, a.nombre AS actor
+    `SELECT e.id_elenco, e.id_pelicula, e.id_actor, e.personaje, e.url_personaje, e.status,
+            p.titulo AS pelicula, a.nombre AS actor, a.url_foto
      FROM elenco e
      JOIN peliculas p ON e.id_pelicula = p.id_pelicula
      JOIN actores a ON e.id_actor = a.id_actor
@@ -25,11 +25,11 @@ export const getElencoById = async (id) => {
   return new Elenco(result.rows[0]);
 };
 
-// Obtener elenco por pelicula
+// Obtener elenco por película
 export const getElencoByPelicula = async (id_pelicula) => {
   const result = await pool.query(
-    `SELECT e.id_elenco, e.id_pelicula, e.id_actor, e.personaje, e.status,
-            p.titulo AS pelicula, a.nombre AS actor
+    `SELECT e.id_elenco, e.id_pelicula, e.id_actor, e.personaje, e.url_personaje, e.status,
+            p.titulo AS pelicula, a.nombre AS actor, a.url_foto
      FROM elenco e
      JOIN peliculas p ON e.id_pelicula = p.id_pelicula
      JOIN actores a ON e.id_actor = a.id_actor
@@ -39,11 +39,11 @@ export const getElencoByPelicula = async (id_pelicula) => {
   return result.rows.map(row => new Elenco(row));
 };
 
-// Crear nuevo elenco
-export const createElenco = async ({ id_pelicula, id_actor, personaje }) => {
+// Crear nuevo elenco con foto del personaje
+export const createElenco = async ({ id_pelicula, id_actor, personaje, url_personaje }) => {
   const result = await pool.query(
-    "INSERT INTO elenco (id_pelicula, id_actor, personaje) VALUES ($1, $2, $3) RETURNING *",
-    [id_pelicula, id_actor, personaje]
+    "INSERT INTO elenco (id_pelicula, id_actor, personaje, url_personaje) VALUES ($1, $2, $3, $4) RETURNING *",
+    [id_pelicula, id_actor, personaje, url_personaje]
   );
   return new Elenco(result.rows[0]);
 };
@@ -53,7 +53,7 @@ export const updateElenco = async (id, campos) => {
   if (Object.keys(campos).length === 0) return null;
 
   // 🔹 Lista blanca de campos permitidos en la tabla
-  const validFields = ["id_pelicula", "id_actor", "personaje", "status"];
+  const validFields = ["id_pelicula", "id_actor", "personaje", "url_personaje", "status"];
 
   const setClauses = [];
   const values = [];
@@ -61,7 +61,7 @@ export const updateElenco = async (id, campos) => {
 
   for (const [key, value] of Object.entries(campos)) {
     if (!validFields.includes(key)) {
-      throw new Error(`Invalid field: ${key}`); // si envías algo no permitido
+      throw new Error(`Invalid field: ${key}`);
     }
     setClauses.push(`${key} = $${index}`);
     values.push(value);
@@ -78,7 +78,6 @@ export const updateElenco = async (id, campos) => {
   `;
 
   const result = await pool.query(query, values);
-
   if (result.rows.length === 0) return null;
   return new Elenco(result.rows[0]);
 };
@@ -93,6 +92,7 @@ export const deleteElenco = async (id) => {
   return new Elenco(result.rows[0]);
 };
 
+// Reactivar elenco
 export const activateElenco = async (id) => {
   const result = await pool.query(
     "UPDATE elenco SET status = TRUE WHERE id_elenco = $1 RETURNING *",

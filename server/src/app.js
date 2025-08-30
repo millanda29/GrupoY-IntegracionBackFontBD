@@ -6,13 +6,14 @@ import elencoRoutes from './routes/elencoRoutes.js';
 
 const app = express();
 
-// Middlewares
+// 🔹 Middlewares
 app.use(cors());
 app.use(express.json());
 
-// Rutas
+// 🔹 Rutas principales
 app.use('/api/actores', actoresRoutes);
 app.use('/api/peliculas', peliculasRoutes);
 app.use('/api/elenco', elencoRoutes);
 
+// 🔹 Exportar app para server.js u otros usos
 export default app;

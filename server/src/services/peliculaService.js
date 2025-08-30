@@ -2,12 +2,17 @@ import { pool } from "../db.js";
 import Pelicula from "../models/peliculaModel.js";
 
 export const getAllPeliculas = async () => {
-  const result = await pool.query("SELECT * FROM peliculas WHERE status = true ORDER BY id_pelicula ASC");
+  const result = await pool.query(
+    "SELECT * FROM peliculas WHERE status = TRUE ORDER BY id_pelicula ASC"
+  );
   return result.rows.map(row => new Pelicula(row));
 };
 
 export const getPeliculaById = async (id) => {
-  const result = await pool.query("SELECT * FROM peliculas WHERE id_pelicula = $1 AND status = true", [id]);
+  const result = await pool.query(
+    "SELECT * FROM peliculas WHERE id_pelicula = $1 AND status = TRUE",
+    [id]
+  );
   if (result.rows.length === 0) return null;
   return new Pelicula(result.rows[0]);
 };
@@ -29,8 +34,8 @@ export const createPelicula = async (data) => {
 
   const result = await pool.query(
     `INSERT INTO peliculas (titulo, anio, genero, duracion, descripcion, fecha_estreno, director, musica, historia, guion, url_portada)
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
-    RETURNING *`,
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)
+     RETURNING *`,
     [titulo, anio, genero, duracion, descripcion, fecha_estreno, director, musica, historia, guion, url_portada]
   );
 
@@ -39,7 +44,9 @@ export const createPelicula = async (data) => {
 };
 
 export const updatePelicula = async (id, data) => {
-  // Construcción dinámica para campos parciales
+  if (!data || Object.keys(data).length === 0) return null;
+
+  // Construcción dinámica solo con campos enviados
   const setClauses = [];
   const values = [];
   let index = 1;
@@ -53,9 +60,9 @@ export const updatePelicula = async (id, data) => {
   values.push(id);
 
   const query = `
-    UPDATE peliculas 
-    SET ${setClauses.join(", ")} 
-    WHERE id_pelicula = $${index}
+    UPDATE peliculas
+    SET ${setClauses.join(", ")}
+    WHERE id_pelicula = $${index} AND status = TRUE
     RETURNING *;
   `;
 
@@ -64,36 +71,9 @@ export const updatePelicula = async (id, data) => {
   return new Pelicula(result.rows[0]);
 };
 
-export const updatePeliculaFull = async (id, data) => {
-  const {
-    titulo,
-    anio,
-    genero,
-    duracion,
-    descripcion,
-    fecha_estreno,
-    director,
-    musica,
-    historia,
-    guion,
-    url_portada
-  } = data;
-
-  const result = await pool.query(
-    `UPDATE peliculas SET 
-      titulo=$1, anio=$2, genero=$3, duracion=$4, descripcion=$5, fecha_estreno=$6, 
-      director=$7, musica=$8, historia=$9, guion=$10, url_portada=$11
-      WHERE id_pelicula=$12 RETURNING *`,
-    [titulo, anio, genero, duracion, descripcion, fecha_estreno, director, musica, historia, guion, url_portada, id]
-  );
-
-  if (result.rows.length === 0) return null;
-  return new Pelicula(result.rows[0]);
-};
-
 export const deletePelicula = async (id) => {
   const result = await pool.query(
-    "UPDATE peliculas SET status=false WHERE id_pelicula=$1 RETURNING *",
+    "UPDATE peliculas SET status = FALSE WHERE id_pelicula = $1 RETURNING *",
     [id]
   );
   if (result.rows.length === 0) return null;
@@ -102,7 +82,7 @@ export const deletePelicula = async (id) => {
 
 export const activatePelicula = async (id) => {
   const result = await pool.query(
-    "UPDATE peliculas SET status=true WHERE id_pelicula=$1 RETURNING *",
+    "UPDATE peliculas SET status = TRUE WHERE id_pelicula = $1 RETURNING *",
     [id]
   );
   if (result.rows.length === 0) return null;

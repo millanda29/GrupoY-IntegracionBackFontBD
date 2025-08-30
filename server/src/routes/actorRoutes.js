@@ -10,11 +10,11 @@ import {
 
 const router = express.Router();
 
-router.get('/', getActors);
-router.get('/:id', getActor);
-router.post('/', createActor);
-router.put('/:id', updateActor);
-router.delete('/:id', deleteActor);
+router.get("/", getActors);
+router.get("/:id", getActor);
+router.post("/", createActor);
+router.put("/:id", updateActor);
+router.delete("/:id", deleteActor);
 router.put("/activate/:id", activateActor);
 
 export default router;
