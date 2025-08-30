@@ -63,3 +63,13 @@ export const deleteElenco = async (req, res) => {
     res.status(500).json({ error: "Error deleting elenco" });
   }
 };
+
+export const activateElenco = async (req, res) => {
+  try {
+    const eliminado = await elencoService.activateElenco(req.params.id);
+    if (!eliminado) return res.status(404).json({ message: "Elenco not found" });
+    res.json({ message: "Elenco activate logically", eliminado });
+  } catch (error) {
+    res.status(500).json({ error: "Error activate elenco" });
+  }
+};

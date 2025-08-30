@@ -47,3 +47,13 @@ export const deleteActor = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+export const activateActor = async (req, res) => {
+  try {
+    const actor = await actorService.activateActor(req.params.id);
+    if (!actor) return res.status(404).json({ message: 'Actor not found' });
+    res.json({ message: 'Actor activate logically', actor });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};

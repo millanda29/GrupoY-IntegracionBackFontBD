@@ -48,3 +48,13 @@ export const deletePelicula = async (req, res) => {
     res.status(500).json({ error: "Error deleting movie" });
   }
 };
+
+export const activatePelicula = async (req, res) => {
+  try {
+    const pelicula = await peliculaService.activatePelicula(req.params.id);
+    if (!pelicula) return res.status(404).json({ message: "Movie not found" });
+    res.json({ message: "Movie activate logically", pelicula });
+  } catch (error) {
+    res.status(500).json({ error: "Error activate movie" });
+  }
+};
