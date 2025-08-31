@@ -11,6 +11,9 @@ export const pool = new Pool({
   password: process.env.PGPASSWORD,
   database: process.env.PGDATABASE,
   port: process.env.PGPORT,
+  ssl: {
+    rejectUnauthorized: false, // deshabilita verificación del certificado auto-firmado
+  },
 });
 
 // Verificar conexión al iniciar
