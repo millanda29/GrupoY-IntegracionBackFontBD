@@ -1,39 +1,61 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import MovieCard from '../../components/MovieCard/MovieCard';
 import './Movies.css';
-import { movies as initialMovies } from '../../data/movies';
 import MovieModal from '../../components/MovieModal/MovieModal';
 import { useModal } from '../../context/ModalContext';
 
 const Movies = () => {
-  const [movies, setMovies] = useState(initialMovies);
+  const [movies, setMovies] = useState([]);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const { showModal } = useModal();
 
-  const handleOpenCreateModal = () => {
-    setIsCreateModalOpen(true);
-  };
+  // 🔹 Cargar películas desde backend
+  useEffect(() => {
+    const fetchMovies = async () => {
+      try {
+        const response = await fetch('http://localhost:4000/api/peliculas');
+        if (!response.ok) throw new Error('Error fetching movies');
+        const data = await response.json();
+        setMovies(data);
+      } catch (error) {
+        console.error(error);
+        showModal('Error al cargar películas');
+      }
+    };
+    fetchMovies();
+  }, [showModal]);
 
-  const handleCloseCreateModal = () => {
-    setIsCreateModalOpen(false);
-  };
+  const handleOpenCreateModal = () => setIsCreateModalOpen(true);
+  const handleCloseCreateModal = () => setIsCreateModalOpen(false);
 
-  const handleSaveNewMovie = (newMovie, uploadedFile) => {
-    console.log('Guardando nueva película:', newMovie);
-    if (uploadedFile) {
-      console.log('Simulando subida de imagen:', uploadedFile.name);
-      newMovie.url_portada = URL.createObjectURL(uploadedFile);
+  // 🔹 Guardar nueva película en backend
+  const handleSaveNewMovie = async (newMovie, uploadedFile) => {
+    try {
+      if (uploadedFile) {
+        // Si quieres, aquí se podría implementar subida real de archivos
+        newMovie.url_portada = URL.createObjectURL(uploadedFile);
+      }
+
+      const response = await fetch('http://localhost:4000/api/peliculas', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newMovie),
+      });
+
+      if (!response.ok) throw new Error('Error creating movie');
+      const createdMovie = await response.json();
+      setMovies([...movies, createdMovie]);
+      setIsCreateModalOpen(false);
+      showModal('¡Película creada con éxito!');
+    } catch (error) {
+      console.error(error);
+      showModal('Error al crear película');
     }
-    // Aquí iría la lógica para guardar en la base de datos y obtener el nuevo ID
-    const newMovieWithId = { ...newMovie, id_pelicula: movies.length + 1 };
-    setMovies([...movies, newMovieWithId]);
-    setIsCreateModalOpen(false);
-    showModal('¡Película creada con éxito!');
   };
 
   return (
     <div className="movies-page">
-      <h1>Peliculas</h1>
+      <h1>Películas</h1>
       <div className="movies-container">
         {movies.map(movie => (
           <MovieCard

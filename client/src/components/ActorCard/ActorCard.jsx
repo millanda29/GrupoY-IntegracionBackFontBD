@@ -4,7 +4,7 @@ import "./ActorCard.css";
 const ActorCard = ({ actor, onViewMore }) => (
   <div className="actor-card">
     <img
-      src={actor.image}
+      src={actor.url_foto}
       alt={actor.nombre}
       className="actor-card-img"
     />

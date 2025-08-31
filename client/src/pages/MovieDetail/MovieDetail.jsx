@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import './MovieDetail.css';
-import { movies as allMovies } from '../../data/movies';
 import { useModal } from '../../context/ModalContext.jsx';
 import MovieModal from '../../components/MovieModal/MovieModal';
 import MovieCast from '../../components/MovieCast/MovieCast';
@@ -11,60 +10,77 @@ const MovieDetail = () => {
   const navigate = useNavigate();
   const { showModal } = useModal();
   const [isEditing, setIsEditing] = useState(false);
-
   const [movie, setMovie] = useState(null);
 
+  // 🔹 Cargar película desde el backend
   useEffect(() => {
-    const selectedMovie = allMovies.find((m) => m.id_pelicula === parseInt(id));
-    if (selectedMovie) {
-      setMovie(selectedMovie);
-    } else {
-      console.error(`Movie with id ${id} not found`);
-      navigate('/'); // Or show a not found component
-    }
+    const fetchMovie = async () => {
+      try {
+        const response = await fetch(`http://localhost:4000/api/peliculas/${id}`);
+        if (!response.ok) throw new Error('Película no encontrada');
+        const data = await response.json();
+        setMovie(data);
+      } catch (error) {
+        console.error(error);
+        navigate('/movies'); // Redirige si no encuentra la película
+      }
+    };
+    fetchMovie();
   }, [id, navigate]);
 
-  const handleEdit = () => {
-    setIsEditing(true);
-  };
+  const handleEdit = () => setIsEditing(true);
+  const handleCancel = () => setIsEditing(false);
 
-  const handleCancel = () => {
-    setIsEditing(false);
-  };
+  // 🔹 Guardar cambios vía API
+  const handleSave = async (editedMovie, uploadedFile) => {
+    try {
+      const formData = { ...editedMovie };
 
-  const handleSave = (editedMovie, uploadedFile) => {
-    let movieToSave = { ...editedMovie };
+      if (uploadedFile) {
+        formData.url_portada = URL.createObjectURL(uploadedFile); // temporal
+      }
 
-    if (uploadedFile) {
-      console.log('Simulando subida de imagen:', uploadedFile.name);
-      movieToSave.url_portada = URL.createObjectURL(uploadedFile);
-      console.log('Datos a guardar en la base de datos:', movieToSave);
+      const response = await fetch(`http://localhost:4000/api/peliculas/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+
+      if (!response.ok) throw new Error('Error al guardar la película');
+      const updatedMovie = await response.json();
+      setMovie(updatedMovie);
+      setIsEditing(false);
+      showModal('¡Película actualizada exitosamente!');
+    } catch (error) {
+      console.error(error);
+      showModal('Error al actualizar la película');
     }
-
-    setMovie(movieToSave);
-    setIsEditing(false);
-    showModal('¡Guardado exitoso!');
   };
 
-  const handleDelete = () => {
-    console.log(`Eliminar película con ID: ${id}`);
-    // LLamada al api para eliminar la pelicula del backend
-    showModal('¡Película eliminada!');
-    navigate("/movies");
+  // 🔹 Eliminar película (lógico)
+  const handleDelete = async () => {
+    try {
+      const response = await fetch(`http://localhost:4000/api/peliculas/${id}`, {
+        method: 'DELETE'
+      });
+      if (!response.ok) throw new Error('Error al eliminar la película');
+      showModal('¡Película eliminada correctamente!');
+      navigate('/movies');
+    } catch (error) {
+      console.error(error);
+      showModal('Error al eliminar la película');
+    }
   };
 
-  if (!movie) {
-    return <div>Cargando...</div>;
-  }
+  if (!movie) return <div>Cargando...</div>;
 
   return (
     <div className="movie-detail-container">
-      <button onClick={() => navigate(-1)} className="back-button">
-        Regresar
-      </button>
+      <button onClick={() => navigate(-1)} className="back-button">Regresar</button>
+
       <div className="movie-detail-card">
         <div className="movie-detail-image">
-          <img src={movie.url_portada} alt={movie.titulo} />
+          <img src={movie.url_portada || '/placeholder-movie.png'} alt={movie.titulo} />
         </div>
         <div className="movie-detail-content">
           <h1>{movie.titulo}</h1>
@@ -77,13 +93,10 @@ const MovieDetail = () => {
           <p><strong>Historia:</strong> {movie.historia}</p>
           <p><strong>Guión:</strong> {movie.guion}</p>
           <p><strong>Descripción:</strong> {movie.descripcion}</p>
+
           <div className="movie-detail-actions">
-            <button className="edit-button" onClick={handleEdit}>
-              Editar
-            </button>
-            <button className="delete-button" onClick={handleDelete}>
-              Eliminar
-            </button>
+            <button className="edit-button" onClick={handleEdit}>Editar</button>
+            <button className="delete-button" onClick={handleDelete}>Eliminar</button>
           </div>
         </div>
       </div>
