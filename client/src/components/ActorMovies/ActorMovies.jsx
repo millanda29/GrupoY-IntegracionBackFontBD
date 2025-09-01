@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import './ActorMovies.css';
 import { Link } from 'react-router-dom';
+import './ActorMovies.css';
+import { getAllElenco } from '../../data/apiElenco';
+import { getMovieById } from '../../data/apiPeliculas';
 
 const ActorMovies = ({ id_actor }) => {
   const [moviesData, setMoviesData] = useState([]);
@@ -8,31 +10,26 @@ const ActorMovies = ({ id_actor }) => {
   useEffect(() => {
     const fetchActorMovies = async () => {
       try {
-        // Obtener elenco donde participe el actor
-        const responseElenco = await fetch(`http://localhost:4000/api/elenco`);
-        if (!responseElenco.ok) throw new Error('Error fetching elenco');
-        const elencoData = await responseElenco.json();
+        // Obtener todo el elenco
+        const elencoData = await getAllElenco();
 
         // Filtrar solo los registros de este actor
         const actorMovies = elencoData.filter(e => e.id_actor === id_actor);
 
         // Obtener detalles de cada película
         const moviesPromises = actorMovies.map(async (actorMovie) => {
-          const responseMovie = await fetch(`http://localhost:4000/api/peliculas/${actorMovie.id_pelicula}`);
-          if (!responseMovie.ok) throw new Error('Error fetching movie');
-          const movieData = await responseMovie.json();
+          const movieData = await getMovieById(actorMovie.id_pelicula);
           return {
             ...movieData,
             personaje: actorMovie.personaje,
-            url_personaje: actorMovie.url_personaje // si quieres mostrar imagen del personaje
+            url_personaje: actorMovie.url_personaje // opcional para imagen del personaje
           };
         });
 
         const moviesResult = await Promise.all(moviesPromises);
         setMoviesData(moviesResult);
-
       } catch (error) {
-        console.error(error);
+        console.error('Error cargando películas del actor:', error);
       }
     };
 

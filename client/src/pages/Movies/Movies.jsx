@@ -3,19 +3,18 @@ import MovieCard from '../../components/MovieCard/MovieCard';
 import './Movies.css';
 import MovieModal from '../../components/MovieModal/MovieModal';
 import { useModal } from '../../context/ModalContext';
+import { getAllMovies, createMovie } from '../../data/apiPeliculas'; // 🔹 Usamos las funciones del API
 
 const Movies = () => {
   const [movies, setMovies] = useState([]);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const { showModal } = useModal();
 
-  // 🔹 Cargar películas desde backend
+  // 🔹 Cargar películas desde backend usando apiPeliculas.js
   useEffect(() => {
     const fetchMovies = async () => {
       try {
-        const response = await fetch('http://localhost:4000/api/peliculas');
-        if (!response.ok) throw new Error('Error fetching movies');
-        const data = await response.json();
+        const data = await getAllMovies();
         setMovies(data);
       } catch (error) {
         console.error(error);
@@ -31,20 +30,14 @@ const Movies = () => {
   // 🔹 Guardar nueva película en backend
   const handleSaveNewMovie = async (newMovie, uploadedFile) => {
     try {
+      // Si hay imagen subida manualmente
       if (uploadedFile) {
-        // Si quieres, aquí se podría implementar subida real de archivos
         newMovie.url_portada = URL.createObjectURL(uploadedFile);
       }
 
-      const response = await fetch('http://localhost:4000/api/peliculas', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newMovie),
-      });
-
-      if (!response.ok) throw new Error('Error creating movie');
-      const createdMovie = await response.json();
+      const createdMovie = await createMovie(newMovie); // 🔹 Usamos la función del API
       setMovies([...movies, createdMovie]);
+
       setIsCreateModalOpen(false);
       showModal('¡Película creada con éxito!');
     } catch (error) {
@@ -69,7 +62,11 @@ const Movies = () => {
           />
         ))}
       </div>
+
+      {/* Botón para abrir modal de crear */}
       <button className="fab" onClick={handleOpenCreateModal}>+</button>
+
+      {/* Modal de creación */}
       {isCreateModalOpen && (
         <MovieModal 
           onClose={handleCloseCreateModal}

@@ -5,6 +5,9 @@ import { useModal } from '../../context/ModalContext.jsx';
 import MovieModal from '../../components/MovieModal/MovieModal';
 import MovieCast from '../../components/MovieCast/MovieCast';
 
+// 🔹 Importamos funciones de la API
+import { getMovieById, updateMovie, deleteMovie } from '../../data/apiPeliculas';
+
 const MovieDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -12,26 +15,25 @@ const MovieDetail = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [movie, setMovie] = useState(null);
 
-  // 🔹 Cargar película desde el backend
+  // 🔹 Cargar película desde backend
   useEffect(() => {
     const fetchMovie = async () => {
       try {
-        const response = await fetch(`http://localhost:4000/api/peliculas/${id}`);
-        if (!response.ok) throw new Error('Película no encontrada');
-        const data = await response.json();
+        const data = await getMovieById(id);
         setMovie(data);
       } catch (error) {
         console.error(error);
+        showModal('Película no encontrada');
         navigate('/movies'); // Redirige si no encuentra la película
       }
     };
     fetchMovie();
-  }, [id, navigate]);
+  }, [id, navigate, showModal]);
 
   const handleEdit = () => setIsEditing(true);
   const handleCancel = () => setIsEditing(false);
 
-  // 🔹 Guardar cambios vía API
+  // 🔹 Guardar cambios
   const handleSave = async (editedMovie, uploadedFile) => {
     try {
       const formData = { ...editedMovie };
@@ -40,14 +42,7 @@ const MovieDetail = () => {
         formData.url_portada = URL.createObjectURL(uploadedFile); // temporal
       }
 
-      const response = await fetch(`http://localhost:4000/api/peliculas/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
-      });
-
-      if (!response.ok) throw new Error('Error al guardar la película');
-      const updatedMovie = await response.json();
+      const updatedMovie = await updateMovie(id, formData);
       setMovie(updatedMovie);
       setIsEditing(false);
       showModal('¡Película actualizada exitosamente!');
@@ -57,13 +52,10 @@ const MovieDetail = () => {
     }
   };
 
-  // 🔹 Eliminar película (lógico)
+  // 🔹 Eliminar película
   const handleDelete = async () => {
     try {
-      const response = await fetch(`http://localhost:4000/api/peliculas/${id}`, {
-        method: 'DELETE'
-      });
-      if (!response.ok) throw new Error('Error al eliminar la película');
+      await deleteMovie(id);
       showModal('¡Película eliminada correctamente!');
       navigate('/movies');
     } catch (error) {

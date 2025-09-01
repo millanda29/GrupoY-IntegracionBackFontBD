@@ -3,7 +3,6 @@ import './MovieModal.css';
 
 const MovieModal = ({ movie, onClose, onSave }) => {
   const [editedMovie, setEditedMovie] = useState(null);
-  const [uploadedFile, setUploadedFile] = useState(null);
 
   useEffect(() => {
     if (movie) {
@@ -30,34 +29,11 @@ const MovieModal = ({ movie, onClose, onSave }) => {
     setEditedMovie({ ...editedMovie, [name]: value });
   };
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setUploadedFile(file);
-      setEditedMovie({ ...editedMovie, url_portada: URL.createObjectURL(file) });
-    }
-  };
-
-  const handleDragOver = (e) => {
-    e.preventDefault();
-  };
-
-  const handleDrop = (e) => {
-    e.preventDefault();
-    const file = e.dataTransfer.files[0];
-    if (file) {
-      setUploadedFile(file);
-      setEditedMovie({ ...editedMovie, url_portada: URL.createObjectURL(file) });
-    }
-  };
-
   const handleSave = () => {
-    onSave(editedMovie, uploadedFile);
+    onSave(editedMovie);
   };
 
-  if (!editedMovie) {
-    return null;
-  }
+  if (!editedMovie) return null;
 
   return (
     <div className="modal-overlay">
@@ -109,26 +85,19 @@ const MovieModal = ({ movie, onClose, onSave }) => {
           </div>
           
           <div className="form-group full-width">
-            <label>Portada:</label>
-            <div 
-              className="drop-zone" 
-              onDrop={handleDrop} 
-              onDragOver={handleDragOver}
-              onClick={() => document.getElementById('file-input').click()}
-            >
-              {editedMovie.url_portada ? (
+            <label>Portada (URL):</label>
+            <input 
+              type="text" 
+              name="url_portada" 
+              value={editedMovie.url_portada} 
+              onChange={handleChange} 
+              placeholder="https://ejemplo.com/imagen.jpg"
+            />
+            {editedMovie.url_portada && (
+              <div className="image-preview-container">
                 <img src={editedMovie.url_portada} alt="Vista previa" className="image-preview" />
-              ) : (
-                <p>Arrastra una imagen aquí o haz clic para seleccionar</p>
-              )}
-              <input 
-                type="file" 
-                id="file-input"
-                style={{ display: 'none' }} 
-                onChange={handleFileChange} 
-                accept="image/*"
-              />
-            </div>
+              </div>
+            )}
           </div>
 
           <div className="modal-actions">

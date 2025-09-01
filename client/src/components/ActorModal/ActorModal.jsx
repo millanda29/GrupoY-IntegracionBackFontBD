@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import './ActorModal.css';
 
 const ActorModal = ({ actor, onClose, onSave }) => {
   const [editedActor, setEditedActor] = useState(null);
-  const [uploadedFile, setUploadedFile] = useState(null);
 
   useEffect(() => {
     if (actor) {
@@ -11,7 +10,7 @@ const ActorModal = ({ actor, onClose, onSave }) => {
     } else {
       setEditedActor({
         nombre: '',
-        image: ''
+        image: '' // URL de la imagen
       });
     }
   }, [actor]);
@@ -21,34 +20,11 @@ const ActorModal = ({ actor, onClose, onSave }) => {
     setEditedActor({ ...editedActor, [name]: value });
   };
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setUploadedFile(file);
-      setEditedActor({ ...editedActor, image: URL.createObjectURL(file) });
-    }
-  };
-
-  const handleDragOver = (e) => {
-    e.preventDefault();
-  };
-
-  const handleDrop = (e) => {
-    e.preventDefault();
-    const file = e.dataTransfer.files[0];
-    if (file) {
-      setUploadedFile(file);
-      setEditedActor({ ...editedActor, image: URL.createObjectURL(file) });
-    }
-  };
-
   const handleSave = () => {
-    onSave(editedActor, uploadedFile);
+    onSave(editedActor); // No necesitamos archivo, solo la URL
   };
 
-  if (!editedActor) {
-    return null;
-  }
+  if (!editedActor) return null;
 
   return (
     <div className="modal-overlay">
@@ -58,32 +34,35 @@ const ActorModal = ({ actor, onClose, onSave }) => {
           <div className="form-grid">
             <div className="form-group">
               <label>Nombre:</label>
-              <input type="text" name="nombre" value={editedActor.nombre} onChange={handleChange} />
+              <input
+                type="text"
+                name="nombre"
+                value={editedActor.nombre}
+                onChange={handleChange}
+              />
             </div>
-          </div>
-          
-          <div className="form-group full-width">
-            <label>Foto:</label>
-            <div 
-              className="drop-zone" 
-              onDrop={handleDrop} 
-              onDragOver={handleDragOver}
-              onClick={() => document.getElementById('file-input').click()}
-            >
-              {editedActor.image ? (
-                <img src={editedActor.image} alt="Vista previa" className="image-preview" />
-              ) : (
-                <p>Arrastra una imagen aquí o haz clic para seleccionar</p>
-              )}
-              <input 
-                type="file" 
-                id="file-input"
-                style={{ display: 'none' }} 
-                onChange={handleFileChange} 
-                accept="image/*"
+            <div className="form-group">
+              <label>URL de la foto:</label>
+              <input
+                type="text"
+                name="image"
+                placeholder="https://ejemplo.com/foto.jpg"
+                value={editedActor.image}
+                onChange={handleChange}
               />
             </div>
           </div>
+
+          {editedActor.image && (
+            <div className="form-group full-width">
+              <label>Vista previa:</label>
+              <img
+                src={editedActor.image}
+                alt="Vista previa"
+                className="image-preview"
+              />
+            </div>
+          )}
 
           <div className="modal-actions">
             <button type="button" onClick={handleSave}>Guardar</button>

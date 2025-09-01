@@ -7,7 +7,6 @@ const MovieCard = ({
   titulo = 'Título de la película',
   descripcion = 'Descripción de la película',
   url_portada = 'https://via.placeholder.com/150',
-  fecha_estreno = 'Fecha de estreno',
   genero = 'Género'
 }) => {
 
@@ -18,9 +17,10 @@ const MovieCard = ({
       </div>
       <div className="movie-card-content">
         <h3 className="movie-card-title">{titulo}</h3>
-        <p className="movie-card-description">{descripcion}</p>
+        <p className="movie-card-description">
+          {descripcion.length > 100 ? descripcion.slice(0, 100) + "..." : descripcion}
+        </p>
         <p className="movie-card-info"><strong>Género:</strong> {genero}</p>
-        <p className="movie-card-info"><strong>Estreno:</strong> {fecha_estreno}</p>
         <Link to={`/movie/${id_pelicula}`} className="movie-card-button">
           Más información
         </Link>
