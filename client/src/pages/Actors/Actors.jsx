@@ -4,6 +4,7 @@ import './Actors.css';
 import ActorModal from '../../components/ActorModal/ActorModal';
 import { useModal } from '../../context/ModalContext';
 import { useNavigate } from 'react-router-dom';
+import { getAllActors, createActor } from '../../data/apiActor'; // 🔹 Centralizar llamadas API
 
 const Actors = () => {
   const [actorsData, setActorsData] = useState([]);
@@ -11,52 +12,45 @@ const Actors = () => {
   const { showModal } = useModal();
   const navigate = useNavigate();
 
-  // 🔹 Cargar actores desde el backend
+  // 🔹 Cargar actores desde el backend al montar
   useEffect(() => {
     const fetchActors = async () => {
       try {
-        const response = await fetch('http://localhost:4000/api/actores');
-        const data = await response.json();
+        const data = await getAllActors(); // 🔹 Llamada centralizada
         setActorsData(data);
       } catch (error) {
         console.error('Error fetching actors:', error);
-        showModal('Error al cargar actores');
+        showModal('⚠️ Error al cargar actores');
       }
     };
     fetchActors();
-  }, []);
+  }, [showModal]);
 
+  // 🔹 Abrir y cerrar modal de creación
   const handleOpenCreateModal = () => setIsCreateModalOpen(true);
   const handleCloseCreateModal = () => setIsCreateModalOpen(false);
 
   // 🔹 Guardar nuevo actor en backend y actualizar estado
   const handleSaveNewActor = async (newActor) => {
     try {
-      const response = await fetch('http://localhost:4000/api/actores', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newActor),
-      });
-
-      if (!response.ok) throw new Error('Error creating actor');
-
-      const createdActor = await response.json();
-      setActorsData([...actorsData, createdActor]);
+      const createdActor = await createActor(newActor); // 🔹 API centralizada
+      setActorsData((prev) => [...prev, createdActor]);
       setIsCreateModalOpen(false);
-      showModal('¡Actor creado con éxito!');
+      showModal('✅ ¡Actor creado con éxito!');
     } catch (error) {
       console.error(error);
-      showModal('Error al crear actor');
+      showModal('❌ Error al crear actor');
     }
   };
 
+  // 🔹 Navegar a detalle del actor
   const handleViewMore = (id) => navigate(`/actor/${id}`);
 
   return (
     <div className="actors-page">
-      <h1>Actores</h1>
+      <h1>🎭 Actores</h1>
       <div className="actors-container">
-        {actorsData.map(actor => (
+        {actorsData.map((actor) => (
           <ActorCard
             key={actor.id_actor}
             actor={actor}
@@ -64,9 +58,15 @@ const Actors = () => {
           />
         ))}
       </div>
-      <button className="fab" onClick={handleOpenCreateModal}>+</button>
+
+      {/* Botón flotante para abrir modal */}
+      <button className="fab" onClick={handleOpenCreateModal}>
+        +
+      </button>
+
+      {/* Modal de creación de actor */}
       {isCreateModalOpen && (
-        <ActorModal 
+        <ActorModal
           onClose={handleCloseCreateModal}
           onSave={handleSaveNewActor}
         />
