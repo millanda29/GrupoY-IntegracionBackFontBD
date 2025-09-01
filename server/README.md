@@ -43,12 +43,32 @@ El servidor se iniciará en:
 http://localhost:4000
 ```
 
-## 📂 Estructura inicial
+## 📂 Estructura completa
 
 ```
 server/
 ├── .gitignore
 ├── package.json
 ├── README.md
-└── (próximamente src/, routes/, db/, etc.)
+├── API.md
+└── src/
+	├── app.js
+	├── db.js
+	├── server.js
+	├── controllers/
+	│   ├── actorController.js
+	│   ├── elencoController.js
+	│   └── peliculaController.js
+	├── models/
+	│   ├── actorModel.js
+	│   ├── elencoModel.js
+	│   └── peliculaModel.js
+	├── routes/
+	│   ├── actorRoutes.js
+	│   ├── elencoRoutes.js
+	│   └── peliculaRoutes.js
+	└── services/
+		├── actorService.js
+		├── elencoService.js
+		└── peliculaService.js
 ```
