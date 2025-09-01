@@ -1,0 +1,94 @@
+.navbar {
+  background: #1c1c1c;
+  height: 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.2rem;
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  border-bottom: 1px solid #333;
+}
+
+.navbar-container {
+  display: flex;
+  justify-content: space-between;
+  height: 80px;
+  z-index: 1;
+  width: 100%;
+  padding: 0 24px;
+  max-width: 1100px;
+}
+
+.navbar-logo {
+  color: #fff;
+  justify-self: start;
+  cursor: pointer;
+  text-decoration: none;
+  font-size: 2rem;
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+}
+
+.nav-menu {
+  display: flex;
+  align-items: center;
+  list-style: none;
+  text-align: center;
+}
+
+.nav-item {
+  height: 80px;
+}
+
+.nav-links {
+  color: #fff;
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  padding: 0 1rem;
+  height: 100%;
+  cursor: pointer;
+}
+
+.nav-links:hover {
+  border-bottom: 3px solid #61dafb;
+  transition: all 0.2s ease-out;
+}
+
+.navbar-modal {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  padding: 1rem 2rem;
+  border-radius: 5px;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 1000;
+  min-width: 250px;
+}
+
+.navbar-modal.success {
+  background-color: #28a745;
+}
+
+.navbar-modal.error {
+  background-color: #dc3545;
+}
+
+.navbar-modal p {
+  margin: 0;
+}
+
+.navbar-modal button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  margin-left: 1rem;
+  cursor: pointer;
+}
